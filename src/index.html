@@ -7,6 +7,7 @@
     <script src="./js/tryCatch.ts" type="module"></script>
     <script src="./js/index.ts" type="module"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
 </head>
 
 <template id="StationLinkTemplate">
@@ -14,6 +15,7 @@
             data-station-id="0"
             data-station-shortcode="none"
             data-station-name="name"
+            data-active="false"
             id="station_0"
             style="--link-opacity:75%;"
     >
@@ -25,7 +27,7 @@
     <div class="flex gap-4">
         <img src="./static/no_media.png" class="w-16 h-16 object-cover rounded-lg" />
         <div>
-            <p class="text-xs text-gray-400">00:00</p>
+            <p class="text-xs text-gray-400" data-played-timestamp="000000000">x minutes ago</p>
             <p class="text-xl line-clamp-1">Title</p>
             <p class="text-base line-clamp-1">Artist</p>
         </div>
@@ -33,13 +35,13 @@
 </template>
 
 <body class="bg-[#111111] text-[#ffffff]">
-    <img src="./static/no_media.png" class="blur-[64px] fixed inset-0 object-cover w-full img-blur" id="backgroundCover"/>
+    <img src="./static/no_media.png" class="blur-[64px] fixed inset-0 object-cover w-full img-blur animate-[spin_30s_linear_infinite]" id="backgroundCover"/>
     <div class="bg-[#111111]/75 backdrop-blur-[64px] fixed inset-0 object-cover w-full" ></div>
     <div class="relative max-w-[1280px] mx-auto z-10 p-8 flex flex-col gap-4">
         <div class="flex flex-wrap overflow-x-auto gap-8" id="stationSelectContainer">
         </div>
         <div class="grid grid-cols-[25%_75%] gap-8">
-            <div class="p-4 bg-[#111111] shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col gap-4">
+            <div class="p-4 bg-[#111111]/75 shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col gap-4">
                 <img src="./static/no_media.png" id="playerCover" class="rounded-lg" />
                 <div class="flex flex-col gap-2">
                     <div class="relative w-full">
@@ -53,10 +55,19 @@
                         <span id="playerTimerStart">00:00</span>
                         <span id="playerTimerTotal">00:00</span>
                     </div>
+                    <div class="flex gap-2 justify-between items-center">
+                        <button id="playButton">
+                            <img src="./static/ic--baseline-play-circle-filled-white.svg" id="playButtonImage" class="w-12 h-12" />
+                            <img src="./static/ic--baseline-pause-circle-filled.svg" id="pauseButtonImage" class="w-12 h-12 hidden" />
+                        </button>
+                        <div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="flex flex-col gap-8">
-                <div class="p-4 bg-[#111111] shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col gap-4">
+                <div class="p-4 bg-[#111111]/75 shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col gap-4">
                     <div class="flex items-center gap-2">
                         <img src="./static/ic--baseline-skip-next.svg" class="w-8 h-8" />
                         <p class="text-lg">Playing Next</p>
@@ -64,7 +75,7 @@
                     <div id="nextSongContainer">
                     </div>
                 </div>
-                <div class="p-4 bg-[#111111] shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col gap-4">
+                <div class="p-4 bg-[#111111]/75 shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col gap-4">
                     <div class="flex items-center gap-2">
                         <img src="./static/ic--baseline-history.svg" class="w-8 h-8" />
                         <p class="text-lg">Recently Played</p>
@@ -73,7 +84,7 @@
                     </div>
                 </div>
             </div>
-            <div  class="p-4 bg-[#111111] shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col row-start-2 col-span-2">
+            <div  class="p-4 bg-[#111111]/75 shadow-lg shadow-black border border-white/25 rounded-lg flex flex-col row-start-2 col-span-2">
                 <p id="playerTitle" class="text-4xl line-clamp-1 py-2 leading-1">Title</p>
                 <p id="playerArtist" class="text-2xl line-clamp-1 py-2 leading-1 -mt-2">Artist</p>
             </div>

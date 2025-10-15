@@ -2,6 +2,8 @@ import { tryCatch } from "./tryCatch";
 
 const stationTemplate = document.getElementById("StationLinkTemplate")
 const songTemplate = document.getElementById("SongTemplate")
+const playButton = document.getElementById("playButton")
+let updatePlayTimer;
 
 function setActiveStation(id: number) {
     localStorage.setItem("station_id", String(id))
@@ -51,21 +53,71 @@ async function getAndPopulateStations() {
 function setStation(current: number | null, next: number) {
     const lastLink = document.getElementById(`station_${current}`);
     const newLink = document.getElementById(`station_${next}`);
-    if (lastLink) lastLink.style = "--link-opacity:75%;";
-    if (newLink) newLink.style = "--link-opacity:100%;";
+    if (lastLink) {
+        lastLink.style = "--link-opacity:75%;";
+        lastLink.dataset.active = "false";
+    };
+    if (newLink) {
+        newLink.style = "--link-opacity:100%;";
+        newLink.dataset.active = "true";
+    };
     fetchStationNowPlaying(next);
     setActiveStation(next);
+
+    if (playButton.dataset.active == "true") {
+        playButton.children[0].classList.toggle("hidden")
+        playButton.children[1].classList.toggle("hidden")
+        playButton.dataset.active = "false"
+    }
+
+    const prevEl = document.querySelector("audio");
+    if (prevEl) {
+        prevEl.pause();
+        prevEl.remove();
+    };
 }
 
-function secondsToMinutes(seconds: number) {
+function secondsToMinutes(seconds: number, type: "minutes" | "seconds" | "minutesWithSeconds" = "minutesWithSeconds") {
     const mins = Math.floor(seconds / 60)
     const secs = seconds - (mins * 60)
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
+    switch (type) {
+        case "minutes":
+            return `${String(mins)}`
+        case "seconds":
+            return `${String(secs)}`
+        case "minutesWithSeconds":
+            return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
+    }
 }
 
 function getPlayDate(seconds: number) {
-    const dateObject = new Date(seconds * 1000);
-    return dateObject.toLocaleTimeString();
+    let secs = computeElapsedTime(seconds)
+
+    if (secs <= 0) {
+        secs *= -1
+
+        if (secs > 60) {
+            return `in ${secondsToMinutes(secs, "minutes")} minutes`
+        } else {
+            return `in ${secondsToMinutes(secs, "seconds")} seconds`
+        }
+    } else {
+        return `${secondsToMinutes(secs, "minutes")} minutes ago`
+    }
+}
+
+function updateTimestamps() {
+    const timestamps = document.querySelectorAll("[data-played-timestamp]")
+    timestamps.forEach((element) => {
+        element.textContent = getPlayDate(Number(element.dataset.playedTimestamp))
+    })
+}
+
+function computeElapsedTime(playedAtTimestamp: number) {
+    const playedAt = new Date(playedAtTimestamp * 1000);
+    const now = new Date();
+
+    return Math.floor((now.getTime() - playedAt.getTime()) / 1000)
 }
 
 async function fetchStationNowPlaying(id: number) {
@@ -89,22 +141,37 @@ async function fetchStationNowPlaying(id: number) {
     // @ts-ignore
     playerCover.src = data.now_playing.song.art;
     // @ts-ignore
-    playerTimerStart.textContent = secondsToMinutes(data.now_playing.elapsed);
+    playerTimerStart.textContent = secondsToMinutes(computeElapsedTime(data.now_playing.played_at), "minutesWithSeconds")
     // @ts-ignore
     playerTimerTotal.textContent = secondsToMinutes(data.now_playing.duration);
     // @ts-ignore
-    playerProgress.style = `--played-percent:${(data.now_playing.elapsed / data.now_playing.duration) * 100}%;`;
+    playerProgress.style = `--played-percent:${(computeElapsedTime(data.now_playing.played_at) / data.now_playing.duration) * 100}%;`;
     // @ts-ignore
     playerTitle.textContent = data.now_playing.song.title;
     // @ts-ignore
     playerArtist.textContent = data.now_playing.song.artist;
+
+    if (updatePlayTimer) {
+        clearInterval(updatePlayTimer)
+    }
+
+    updatePlayTimer = setInterval(() => {
+        if (data.now_playing.duration - computeElapsedTime(data.now_playing.played_at) <= 0) {
+            clearInterval(this)
+            fetchStationNowPlaying(id)
+            return
+        }
+
+        playerTimerStart.textContent = secondsToMinutes(computeElapsedTime(data.now_playing.played_at), "minutesWithSeconds");
+        playerProgress.style = `--played-percent:${(computeElapsedTime(data.now_playing.played_at) / data.now_playing.duration) * 100}%;`;
+    }, 1000)
 
     //@ts-ignore
     const nextSongContainer = document.getElementById("nextSongContainer");
     //@ts-ignore
     const nextSong = songTemplate.content.cloneNode(true);
     nextSong.children[0].children[0].src = data.playing_next.song.art;
-    nextSong.children[0].children[1].children[0].textContent = getPlayDate(data.playing_next.cued_at);
+    nextSong.children[0].children[1].children[0].dataset.playedTimestamp = data.playing_next.played_at;
     nextSong.children[0].children[1].children[1].textContent = data.playing_next.song.title;
     nextSong.children[0].children[1].children[2].textContent = data.playing_next.song.artist;
     //@ts-ignore
@@ -120,16 +187,60 @@ async function fetchStationNowPlaying(id: number) {
         //@ts-ignore
         const histSong = songTemplate.content.cloneNode(true);
         histSong.children[0].children[0].src = song.song.art;
-        histSong.children[0].children[1].children[0].textContent = getPlayDate(song.played_at);
+        histSong.children[0].children[1].children[0].dataset.playedTimestamp = song.played_at;
         histSong.children[0].children[1].children[1].textContent = song.song.title;
         histSong.children[0].children[1].children[2].textContent = song.song.artist;
         //@ts-ignore
         historySongContainer.appendChild(histSong)
     })
+
+    updateTimestamps()
+}
+
+async function toggleRadio() {
+    const activeStationId = document.querySelector("button[data-active='true']")
+    // @ts-ignore
+    const { data: stationRequest } = await tryCatch(fetch(`http://192.168.100.10:8098/api/nowplaying/${activeStationId.dataset.stationId}`));
+    if (!stationRequest) {
+        // @ts-ignore
+        console.error(`Failed to fetch now playing for station ${activeStationId.dataset.stationId}`);
+        return false;
+    };
+    const data = await stationRequest.json();
+
+    if (playButton.dataset.active == "true") {
+        playButton.children[0].classList.toggle("hidden")
+        playButton.children[1].classList.toggle("hidden")
+        playButton.dataset.active = "false"
+
+        const prevEl = document.querySelector("audio");
+        if (prevEl) {
+            prevEl.pause();
+            prevEl.remove();
+        };
+    } else {
+        playButton.children[0].classList.toggle("hidden")
+        playButton.children[1].classList.toggle("hidden")
+        playButton.dataset.active = "true"
+        const el = document.createElement("audio")
+        const sr = data.station.hls_url;
+        document.querySelector("body").appendChild(el)
+        const hls = new Hls();
+        hls.loadSource(sr);
+        hls.attachMedia(el);
+        el.play()
+    }
+
 }
 
 async function onload() {
     if (!await getAndPopulateStations()) return;
+    // @ts-ignore
+    playButton.addEventListener("click", toggleRadio)
+
+    setInterval(() => {
+        updateTimestamps()
+    }, 10000);
 }
 
 onload()
