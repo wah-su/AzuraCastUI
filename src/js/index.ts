@@ -77,17 +77,10 @@ function setStation(current: number | null, next: number) {
     };
 }
 
-function secondsToMinutes(seconds: number, type: "minutes" | "seconds" | "minutesWithSeconds" = "minutesWithSeconds") {
+function secondsToMinutes(seconds: number) {
     const mins = Math.floor(seconds / 60)
     const secs = seconds - (mins * 60)
-    switch (type) {
-        case "minutes":
-            return `${String(mins)}`
-        case "seconds":
-            return `${String(secs)}`
-        case "minutesWithSeconds":
-            return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
-    }
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
 }
 
 function getPlayDate(seconds: number) {
@@ -95,14 +88,9 @@ function getPlayDate(seconds: number) {
 
     if (secs <= 0) {
         secs *= -1
-
-        if (secs > 60) {
-            return `in ${secondsToMinutes(secs, "minutes")} minutes`
-        } else {
-            return `in ${secondsToMinutes(secs, "seconds")} seconds`
-        }
+        return `in ${secondsToMinutes(secs)} minutes`
     } else {
-        return `${secondsToMinutes(secs, "minutes")} minutes ago`
+        return `${secondsToMinutes(secs)} minutes ago`
     }
 }
 
@@ -141,7 +129,7 @@ async function fetchStationNowPlaying(id: number) {
     // @ts-ignore
     playerCover.src = data.now_playing.song.art;
     // @ts-ignore
-    playerTimerStart.textContent = secondsToMinutes(computeElapsedTime(data.now_playing.played_at), "minutesWithSeconds")
+    playerTimerStart.textContent = secondsToMinutes(computeElapsedTime(data.now_playing.played_at))
     // @ts-ignore
     playerTimerTotal.textContent = secondsToMinutes(data.now_playing.duration);
     // @ts-ignore
@@ -162,7 +150,7 @@ async function fetchStationNowPlaying(id: number) {
             return
         }
 
-        playerTimerStart.textContent = secondsToMinutes(computeElapsedTime(data.now_playing.played_at), "minutesWithSeconds");
+        playerTimerStart.textContent = secondsToMinutes(computeElapsedTime(data.now_playing.played_at));
         playerProgress.style = `--played-percent:${(computeElapsedTime(data.now_playing.played_at) / data.now_playing.duration) * 100}%;`;
     }, 1000)
 
@@ -240,7 +228,7 @@ async function onload() {
 
     setInterval(() => {
         updateTimestamps()
-    }, 10000);
+    }, 1000);
 }
 
 onload()
