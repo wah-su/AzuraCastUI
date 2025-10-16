@@ -261,16 +261,10 @@ async function toggleRadio() {
   }
 }
 
-function changeVolume() {
-  const el = document.querySelector("audio");
-  if (el) {
-    el.volume = volumeSlider.value / 100;
-  }
-
+function changeVolumeIcon() {
   const volumeMuteIcon = document.getElementById("volumeMuteIcon");
   const volumeLowIcon = document.getElementById("volumeLowIcon");
   const volumeHighIcon = document.getElementById("volumeHighIcon");
-
   if (volumeSlider.value == 0) {
     volumeMuteIcon.classList.remove("hidden");
     volumeLowIcon.classList.add("hidden");
@@ -284,7 +278,14 @@ function changeVolume() {
     volumeLowIcon.classList.add("hidden");
     volumeHighIcon.classList.remove("hidden");
   }
+}
 
+function changeVolume() {
+  const el = document.querySelector("audio");
+  if (el) {
+    el.volume = volumeSlider.value / 100;
+  }
+  changeVolumeIcon();
   localStorage.setItem("volume", String(volumeSlider.value));
 }
 
@@ -293,6 +294,7 @@ async function onload() {
   // @ts-ignore
   playButton.addEventListener("click", toggleRadio);
   volumeSlider.value = getVolume();
+  changeVolumeIcon();
   volumeSlider.addEventListener("change", changeVolume);
 
   setInterval(() => {
