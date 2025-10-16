@@ -6,6 +6,7 @@ const playButton = document.getElementById("playButton");
 const volumeSlider = document.getElementById("volumeSlider");
 let updatePlayTimer;
 const BASE_URL = process.env.BUN_PUBLIC_BASE_URL;
+let hls;
 
 function setActiveStation(id: number) {
   localStorage.setItem("station_id", String(id));
@@ -48,35 +49,43 @@ async function getAndPopulateStations() {
     link.children[0].textContent = station.name;
     link.children[0].dataset.stationId = station.id;
     link.children[0].dataset.stationShortcode = station.shortcode;
-    link.children[0].dataset.name = station.name;
+    link.children[0].dataset.stationName = station.name;
     link.children[0].setAttribute("id", `station_${station.id}`);
     //@ts-ignore
     stationSelectContainer.appendChild(link);
+  });
 
-    const activeStation = getActiveStation();
-    if (activeStation && activeStation == station.id) {
-      setStation(null, activeStation);
-    } else {
-      setStation(null, 1);
-    }
+  const activeStation = getActiveStation();
+  if (activeStation) {
+    setStation(activeStation);
+  } else {
+    setStation(1);
+  }
+
+  document.querySelectorAll("[data-station-id]").forEach((element) => {
+    element.addEventListener("click", () => {
+      setStation(Number(element.dataset.stationId));
+    });
   });
 
   return true;
 }
 
-function setStation(current: number | null, next: number) {
-  const lastLink = document.getElementById(`station_${current}`);
-  const newLink = document.getElementById(`station_${next}`);
-  if (lastLink) {
-    lastLink.style = "--link-opacity:75%;";
-    lastLink.dataset.active = "false";
-  }
+function setStation(next: number) {
+  const newLink = document.querySelector(`button[data-station-id="${next}"]`);
+  const allLinks = document.querySelectorAll("[data-station-id]");
+
+  allLinks.forEach((element) => {
+    element.style = "--link-opacity:75%;";
+    element.dataset.active = "false";
+  });
+
   if (newLink) {
     newLink.style = "--link-opacity:100%;";
     newLink.dataset.active = "true";
   }
-  fetchStationNowPlaying(next);
   setActiveStation(next);
+  fetchStationNowPlaying(next);
 
   if (playButton.dataset.active == "true") {
     playButton.children[0].classList.toggle("hidden");
@@ -87,6 +96,9 @@ function setStation(current: number | null, next: number) {
   const prevEl = document.querySelector("audio");
   if (prevEl) {
     prevEl.pause();
+    hls.detachMedia(prevEl);
+    hls.destroy(prevEl);
+    prevEl.src = "";
     prevEl.remove();
   }
 }
@@ -218,7 +230,9 @@ async function fetchStationNowPlaying(id: number) {
     historySongContainer.appendChild(histSong);
   });
 
-  document.querySelector("title").textContent = `${data.now_playing.song.artist} - ${data.now_playing.song.title} | ${data.station.name}`;
+  document.querySelector(
+    "title"
+  ).textContent = `${data.now_playing.song.artist} - ${data.now_playing.song.title} | ${data.station.name}`;
 
   updateTimestamps();
 }
@@ -246,6 +260,9 @@ async function toggleRadio() {
     const prevEl = document.querySelector("audio");
     if (prevEl) {
       prevEl.pause();
+      hls.detachMedia(prevEl);
+      hls.destroy(prevEl);
+      prevEl.src = "";
       prevEl.remove();
     }
   } else {
@@ -255,7 +272,7 @@ async function toggleRadio() {
     const el = document.createElement("audio");
     const sr = data.station.hls_url;
     document.querySelector("body").appendChild(el);
-    const hls = new Hls();
+    hls = new Hls();
     hls.loadSource(sr);
     hls.attachMedia(el);
     el.volume = volumeSlider.value / 100;
