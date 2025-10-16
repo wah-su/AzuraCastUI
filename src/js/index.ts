@@ -17,6 +17,12 @@ function getActiveStation() {
     : null;
 }
 
+function getVolume() {
+  return localStorage.getItem("volume")
+    ? Number(localStorage.getItem("volume"))
+    : 50;
+}
+
 function removeAllChildNodes(parent) {
   while (parent.firstChild) {
     parent.removeChild(parent.firstChild);
@@ -278,12 +284,15 @@ function changeVolume() {
     volumeLowIcon.classList.add("hidden");
     volumeHighIcon.classList.remove("hidden");
   }
+
+  localStorage.setItem("volume", String(volumeSlider.value));
 }
 
 async function onload() {
   if (!(await getAndPopulateStations())) return;
   // @ts-ignore
   playButton.addEventListener("click", toggleRadio);
+  volumeSlider.value = getVolume();
   volumeSlider.addEventListener("change", changeVolume);
 
   setInterval(() => {
