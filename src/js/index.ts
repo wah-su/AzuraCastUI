@@ -218,6 +218,8 @@ async function fetchStationNowPlaying(id: number) {
     historySongContainer.appendChild(histSong);
   });
 
+  document.querySelector("title").textContent = `${data.now_playing.song.artist} - ${data.now_playing.song.title} | ${data.station.name}`;
+
   updateTimestamps();
 }
 
