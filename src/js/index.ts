@@ -103,20 +103,32 @@ function setStation(next: number) {
   }
 }
 
-function secondsToMinutes(seconds: number) {
+function secondsToMinutes(
+  seconds: number,
+  minutesPad = 0,
+  showMinutes = true,
+  showSeconds = true
+) {
   const mins = Math.floor(seconds / 60);
   const secs = seconds - mins * 60;
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  return `${showMinutes ? String(mins).padStart(minutesPad, "0") : ""}${
+    showMinutes && showSeconds ? ":" : ""
+  }${showSeconds ? String(secs).padStart(2, "0") : ""}`;
 }
 
 function getPlayDate(seconds: number) {
   let secs = computeElapsedTime(seconds);
 
-  if (secs <= 0) {
+  if (secs >= -60 && secs < 0) {
     secs *= -1;
-    return `in ${secondsToMinutes(secs)} minutes`;
+    return `Played in ${secs} seconds`;
+  } else if (secs < -60) {
+    secs *= -1;
+    return `Played in ${secondsToMinutes(secs, 2)} minutes`;
+  } else if (secs > 0 && secs < 30) {
+    return `Ready to play`;
   } else {
-    return `${secondsToMinutes(secs)} minutes ago`;
+    return `${secondsToMinutes(secs, 0, true, false)} minutes ago`;
   }
 }
 
@@ -217,7 +229,7 @@ async function fetchStationNowPlaying(id: number) {
   const historySongContainer = document.getElementById("historySongContainer");
   removeAllChildNodes(historySongContainer);
   data.song_history.forEach((song: any, index: number) => {
-    if (index > 1) return;
+    if (index > 3) return;
 
     //@ts-ignore
     const histSong = songTemplate.content.cloneNode(true);

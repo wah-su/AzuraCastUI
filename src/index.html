@@ -26,13 +26,13 @@
   </template>
 
   <template id="SongTemplate">
-    <div class="flex gap-4">
+    <div class="flex gap-4 w-full h-full overflow-hidden">
       <img
         src="./static/no_media.png"
         class="w-16 h-16 object-cover rounded-lg"
       />
       <div>
-        <p class="text-xs text-gray-400" data-played-timestamp="000000000">
+        <p class="text-xs text-gray-300" data-played-timestamp="000000000">
           x minutes ago
         </p>
         <p class="text-xl line-clamp-1">Title</p>
@@ -52,10 +52,10 @@
     ></div>
     <div class="relative max-w-[1280px] mx-auto z-10 p-8 flex flex-col gap-4">
       <div
-        class="flex flex-wrap overflow-x-auto gap-3"
+        class="flex flex-wrap overflow-x-auto gap-4"
         id="stationSelectContainer"
       ></div>
-      <div class="grid grid-cols-[25%_75%] gap-8">
+      <div class="grid grid-cols-[25%_75%] gap-4">
         <div
           class="p-4 bg-[#111111]/25 shadow-lg shadow-black/25 border border-white/25 rounded-lg flex flex-col gap-4"
         >
@@ -73,7 +73,7 @@
                 id="playerProgress"
               ></div>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between text-sm -mt-1">
               <span id="playerTimerStart">00:00</span>
               <span id="playerTimerTotal">00:00</span>
             </div>
@@ -82,12 +82,12 @@
                 <img
                   src="./static/ic--baseline-play-circle-filled-white.svg"
                   id="playButtonImage"
-                  class="w-12 h-12"
+                  class="w-10 h-10"
                 />
                 <img
                   src="./static/ic--baseline-pause-circle-filled.svg"
                   id="pauseButtonImage"
-                  class="w-12 h-12 hidden"
+                  class="w-10 h-10 hidden"
                 />
               </button>
               <div class="flex gap-2 items-center">
@@ -120,7 +120,7 @@
             </div>
           </div>
         </div>
-        <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-4">
           <div
             class="p-4 bg-[#111111]/25 shadow-lg shadow-black/25 border border-white/25 rounded-lg flex flex-col gap-4"
           >
@@ -137,7 +137,7 @@
               <img src="./static/ic--baseline-history.svg" class="w-8 h-8" />
               <p class="text-lg">Recently Played</p>
             </div>
-            <div class="flex flex-col gap-4" id="historySongContainer"></div>
+            <div class="grid grid-cols-2 grid-rows-2 gap-4" id="historySongContainer"></div>
           </div>
         </div>
         <div
