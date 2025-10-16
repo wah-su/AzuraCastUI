@@ -4,6 +4,7 @@ const stationTemplate = document.getElementById("StationLinkTemplate")
 const songTemplate = document.getElementById("SongTemplate")
 const playButton = document.getElementById("playButton")
 let updatePlayTimer;
+const BASE_URL = process.env.BUN_PUBLIC_BASE_URL;
 
 function setActiveStation(id: number) {
     localStorage.setItem("station_id", String(id))
@@ -21,7 +22,7 @@ function removeAllChildNodes(parent) {
 
 async function getAndPopulateStations() {
     const stationSelectContainer = document.getElementById("stationSelectContainer");
-    const { data: stationRequest } = await tryCatch(fetch("http://192.168.100.10:8098/api/stations"));
+    const { data: stationRequest } = await tryCatch(fetch(`${BASE_URL}/stations`));
     if (!stationRequest) {
         console.error("Failed to fetch station list");
         return false;
@@ -109,7 +110,7 @@ function computeElapsedTime(playedAtTimestamp: number) {
 }
 
 async function fetchStationNowPlaying(id: number) {
-    const { data: stationRequest } = await tryCatch(fetch(`http://192.168.100.10:8098/api/nowplaying/${id}`));
+    const { data: stationRequest } = await tryCatch(fetch(`${BASE_URL}/nowplaying/${id}`));
     if (!stationRequest) {
         console.error(`Failed to fetch now playing for station ${id}`);
         return false;
@@ -188,7 +189,7 @@ async function fetchStationNowPlaying(id: number) {
 async function toggleRadio() {
     const activeStationId = document.querySelector("button[data-active='true']")
     // @ts-ignore
-    const { data: stationRequest } = await tryCatch(fetch(`http://192.168.100.10:8098/api/nowplaying/${activeStationId.dataset.stationId}`));
+    const { data: stationRequest } = await tryCatch(fetch(`${BASE_URL}/nowplaying/${activeStationId.dataset.stationId}`));
     if (!stationRequest) {
         // @ts-ignore
         console.error(`Failed to fetch now playing for station ${activeStationId.dataset.stationId}`);
