@@ -14,7 +14,7 @@
 
   <template id="StationLinkTemplate">
     <button
-      class="text-2xl font-bold text-white opacity-[var(--link-opacity)] hover:opacity-100 transition-opacity bg-[#111111]/25 border border-white/25 rounded-full px-6 py-2"
+      class="whitespace-nowrap text-base xl:text-2xl font-bold text-white opacity-[var(--link-opacity)] hover:opacity-100 transition-opacity bg-[#111111]/25 border border-white/25 rounded-full px-6 py-2"
       data-station-id="0"
       data-station-shortcode="none"
       data-station-name="name"
@@ -36,8 +36,8 @@
         <p class="text-xs text-gray-300" data-played-timestamp="000000000">
           x minutes ago
         </p>
-        <p class="text-xl line-clamp-1">Title</p>
-        <p class="text-base line-clamp-1">Artist</p>
+        <p class="text-xl line-clamp-1 overflow-hidden">Title</p>
+        <p class="text-base line-clamp-1 overflow-hidden">Artist</p>
       </div>
     </div>
   </template>
@@ -100,17 +100,17 @@
     ></div>
     <div class="relative max-w-[1280px] mx-auto z-10 p-8 flex flex-col gap-4">
       <div
-        class="flex flex-wrap overflow-x-auto gap-4"
+        class="flex overflow-x-auto gap-4 max-w-[418px] mx-auto xl:mx-0 xl:max-w-none w-full"
         id="stationSelectContainer"
       ></div>
-      <div class="grid grid-cols-[25%_75%] gap-4">
+      <div class="grid grid-cols-1 xl:grid-cols-[25%_75%] mx-auto gap-4 max-w-[418px] xl:max-w-none">
         <div
-          class="p-4 bg-[#111111]/25 shadow-lg shadow-black/25 border border-white/25 rounded-lg flex flex-col gap-4"
+          class="p-4 bg-[#111111]/25 max-w-fit shadow-lg shadow-black/25 border border-white/25 rounded-lg flex flex-col gap-4"
         >
           <img
             src="./static/no_media.png"
             id="playerCover"
-            class="rounded-lg"
+            class="rounded-lg w-96 2xl:w-full"
             crossorigin="anonymous"
           />
           <div class="flex flex-col gap-2">
@@ -187,23 +187,30 @@
               <p class="text-lg">Recently Played</p>
             </div>
             <div
-              class="grid grid-cols-2 grid-rows-2 gap-4"
+              class="grid xl:grid-cols-2 xl:grid-rows-2 gap-4"
               id="historySongContainer"
             ></div>
           </div>
         </div>
         <div
-          class="p-4 bg-[#111111]/25 shadow-lg shadow-black/25 border border-white/25 rounded-lg flex flex-col row-start-2 col-span-2"
+          class="p-4 bg-[#111111]/25 shadow-lg shadow-black/25 border border-white/25 rounded-lg flex flex-col row-start-2 xl:col-span-2 overflow-hidden"
         >
-          <p id="playerTitle" class="text-4xl line-clamp-1 py-2 leading-1">
+          <p id="playerTitle" class="text-2xl xl:text-4xl line-clamp-1 xl:pb-1 h-fit">
             Title
           </p>
           <p
             id="playerArtist"
-            class="text-2xl line-clamp-1 py-2 leading-1 -mt-2"
+            class="text-base xl:text-2xl line-clamp-1 py-2 leading-1"
           >
             Artist
           </p>
+          <div class="pt-2 flex gap-4">
+            <a data-service="apple" data-service-prefix="https://music.apple.com/us/search?term=" target="_blank" href="#"><img src="./static/Apple_Music_icon.svg" class="w-6 h-6"/></a>
+            <a data-service="spotify" data-service-prefix="https://open.spotify.com/search/" target="_blank" href="#"><img src="./static/Spotify_icon.svg" class="w-6 h-6"/></a>
+            <a data-service="yandex" data-service-prefix="https://music.yandex.ru/search?text=" target="_blank" href="#"><img src="./static/yandex_music_icon_ru_circle.svg" class="w-6 h-6"/></a>
+            <a data-service="lastfm" data-service-prefix="https://www.last.fm/search/tracks?q=" target="_blank" href="#"><img src="./static/fa7-brands--lastfm-square.svg" class="w-6 h-6"/></a>
+            <a data-service="google" data-service-prefix="https://www.google.com/search?q=" target="_blank" href="#"><img src="./static/fa7-brands--google.svg" class="w-6 h-6"/></a>
+          </div>
         </div>
       </div>
     </div>

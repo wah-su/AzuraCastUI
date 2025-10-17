@@ -156,7 +156,6 @@ async function fetchStationNowPlaying(id: number) {
   }
   const data = await stationRequest.json();
 
-  // const backgroundCover = document.getElementById("backgroundCover");
   const playerCover = document.getElementById("playerCover");
   const playerProgress = document.getElementById("playerProgress");
   const playerTimerStart = document.getElementById("playerTimerStart");
@@ -164,8 +163,6 @@ async function fetchStationNowPlaying(id: number) {
   const playerTitle = document.getElementById("playerTitle");
   const playerArtist = document.getElementById("playerArtist");
 
-  // @ts-ignore
-  // backgroundCover.src = data.now_playing.song.art;
   // @ts-ignore
   playerCover.src = data.now_playing.song.art;
   getCoverColors();
@@ -185,6 +182,11 @@ async function fetchStationNowPlaying(id: number) {
   playerTitle.textContent = data.now_playing.song.title;
   // @ts-ignore
   playerArtist.textContent = data.now_playing.song.artist;
+
+  document.querySelectorAll("[data-service-prefix]").forEach((element) => {
+    const lnk = element as HTMLAnchorElement;
+    lnk.href = `${element.dataset.servicePrefix}${data.now_playing.song.artist} - ${data.now_playing.song.title}`;
+  });
 
   if (updatePlayTimer) {
     clearInterval(updatePlayTimer);
