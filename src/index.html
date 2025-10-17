@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AzuraCast UI</title>
-    <script src="./js/tryCatch.ts" type="module"></script>
-    <script src="./js/index.ts" type="module"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-    <link rel="stylesheet" href="./static/range.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script src="./js/tryCatch.ts" type="module"></script>
+    <script src="./js/index.ts" type="module"></script>
+    <link rel="stylesheet" href="./static/range.css" />
   </head>
 
   <template id="StationLinkTemplate">
@@ -41,12 +42,59 @@
     </div>
   </template>
 
-  <body class="bg-[#111111] text-[#ffffff]">
-    <img
-      src="./static/no_media.png"
-      class="blur-[64px] fixed inset-0 object-cover w-full img-blur animate-[spin_30s_linear_infinite]"
-      id="backgroundCover"
-    />
+  <body
+    class="bg-[var(--bg-dominant-color,_#111111)] text-[#ffffff]"
+    id="backgroundDominant"
+  >
+    <div
+      class="fixed inset-0"
+    >
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#ffffff)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="0"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#ffffff)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="1"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#111111)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="2"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#ffffff)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="3"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#111111)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="4"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#ffffff)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="5"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#111111)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="6"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#ffffff)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="7"
+      ></div>
+      <div
+        class="w-[50vw] h-[50vh] absolute rounded-full bg-[var(--bg-palette-color,_#111111)] transition-[top,left] delay-[0s] duration-[5s] ease-in"
+        id="background-pallet"
+        data-palette-id="8"
+      ></div>
+    </div>
     <div
       class="bg-[#111111]/25 backdrop-blur-[64px] fixed inset-0 object-cover w-full"
     ></div>
@@ -63,6 +111,7 @@
             src="./static/no_media.png"
             id="playerCover"
             class="rounded-lg"
+            crossorigin="anonymous"
           />
           <div class="flex flex-col gap-2">
             <div class="relative w-full">
@@ -137,7 +186,10 @@
               <img src="./static/ic--baseline-history.svg" class="w-8 h-8" />
               <p class="text-lg">Recently Played</p>
             </div>
-            <div class="grid grid-cols-2 grid-rows-2 gap-4" id="historySongContainer"></div>
+            <div
+              class="grid grid-cols-2 grid-rows-2 gap-4"
+              id="historySongContainer"
+            ></div>
           </div>
         </div>
         <div

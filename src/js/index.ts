@@ -156,7 +156,7 @@ async function fetchStationNowPlaying(id: number) {
   }
   const data = await stationRequest.json();
 
-  const backgroundCover = document.getElementById("backgroundCover");
+  // const backgroundCover = document.getElementById("backgroundCover");
   const playerCover = document.getElementById("playerCover");
   const playerProgress = document.getElementById("playerProgress");
   const playerTimerStart = document.getElementById("playerTimerStart");
@@ -165,9 +165,10 @@ async function fetchStationNowPlaying(id: number) {
   const playerArtist = document.getElementById("playerArtist");
 
   // @ts-ignore
-  backgroundCover.src = data.now_playing.song.art;
+  // backgroundCover.src = data.now_playing.song.art;
   // @ts-ignore
   playerCover.src = data.now_playing.song.art;
+  getCoverColors();
   // @ts-ignore
   playerTimerStart.textContent = secondsToMinutes(
     computeElapsedTime(data.now_playing.played_at)
@@ -320,6 +321,50 @@ function changeVolume() {
   localStorage.setItem("volume", String(volumeSlider.value));
 }
 
+function getCoverColors() {
+  const playerCover = document.getElementById("playerCover");
+  const colorThief = new ColorThief();
+  if (playerCover.complete) {
+    const dominant = colorThief.getColor(playerCover);
+    const palette = colorThief.getPalette(playerCover, 9);
+    setBackgroundColors([...dominant], [...palette]);
+  } else {
+    playerCover.addEventListener("load", function () {
+      const dominant = colorThief.getColor(playerCover);
+      const palette = colorThief.getPalette(playerCover, 9);
+      setBackgroundColors([...dominant], [...palette]);
+    });
+  }
+}
+
+function setBackgroundColors([dR, dG, dB]: number[], palette: number[][]) {
+  const backgroundDominant = document.getElementById("backgroundDominant");
+  backgroundDominant.style.setProperty(
+    "--bg-dominant-color",
+    `rgb(${dR}, ${dG}, ${dB})`
+  );
+
+  document.querySelectorAll("[data-palette-id]").forEach((element, index) => {
+    const pR = palette[index][0];
+    const pG = palette[index][1];
+    const pB = palette[index][2];
+    const { x, y } = getRandomPosition();
+    element.style.setProperty("--bg-palette-color", `rgb(${pR}, ${pG}, ${pB})`);
+    element.style.setProperty("left", `${x}px`);
+    element.style.setProperty("top", `${y}px`);
+  });
+}
+
+function getRandomPosition() {
+  const maxX = window.innerWidth * 0.75; // Adjust for element width
+  const maxY = window.innerHeight * 0.75; // Adjust for element height
+
+  const randomX = Math.floor(Math.random() * maxX);
+  const randomY = Math.floor(Math.random() * maxY);
+
+  return { x: randomX, y: randomY };
+}
+
 async function onload() {
   if (!(await getAndPopulateStations())) return;
   // @ts-ignore
@@ -331,6 +376,20 @@ async function onload() {
   setInterval(() => {
     updateTimestamps();
   }, 1000);
+
+  document.querySelectorAll("[data-palette-id]").forEach((element, index) => {
+      const { x, y } = getRandomPosition();
+      element.style.setProperty("left", `${x}px`);
+      element.style.setProperty("top", `${y}px`);
+    });
+
+  setInterval(() => {
+    document.querySelectorAll("[data-palette-id]").forEach((element, index) => {
+      const { x, y } = getRandomPosition();
+      element.style.setProperty("left", `${x}px`);
+      element.style.setProperty("top", `${y}px`);
+    });
+  }, 5000);
 }
 
 onload();
