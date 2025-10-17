@@ -8,8 +8,11 @@ bun install
 
 To run:
 
+copy `.env.sample` to `.env` and edit azuracast API Base URL env
+
 ```bash
-bun run index.ts
+bun run build
+python -m http.server -d dist/ # or serve files from dist via nginx
 ```
 
-This project was created using `bun init` in bun v1.3.0. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+![UI Preview](preview.png)
