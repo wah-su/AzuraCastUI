@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AzuraCast UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <script src="./js/tryCatch.ts" type="module"></script>
     <script src="./js/index.ts" type="module"></script>
     <link rel="stylesheet" href="./static/range.css" />
@@ -104,7 +102,7 @@
         class="flex overflow-x-auto gap-4 max-w-[418px] mx-auto xl:mx-0 xl:max-w-none w-full"
         id="stationSelectContainer"
       ></div>
-      <div class="grid grid-cols-1 xl:grid-cols-[25%_75%] mx-auto gap-4 max-w-[418px] xl:max-w-none">
+      <div class="grid grid-cols-1 xl:grid-cols-[25%_75%] mx-auto gap-4 max-w-[418px] xl:max-w-none w-full">
         <div
           class="p-4 bg-[#111111]/25 max-w-fit shadow-lg shadow-black/25 border border-white/25 rounded-lg flex flex-col gap-4"
         >
@@ -145,16 +143,22 @@
                   src="./static/ic--baseline-volume-off.svg"
                   id="volumeMuteIcon"
                   class="w-8 h-8 hidden"
+                  data-min-show-volume="-1"
+                  data-max-show-volume="0"
                 />
                 <img
                   src="./static/ic--baseline-volume-down.svg"
                   id="volumeLowIcon"
                   class="w-8 h-8"
+                  data-min-show-volume="1"
+                  data-max-show-volume="50"
                 />
                 <img
                   src="./static/ic--baseline-volume-up.svg"
                   id="volumeHighIcon"
                   class="w-8 h-8 hidden"
+                  data-min-show-volume="51"
+                  data-max-show-volume="100"
                 />
 
                 <input
