@@ -380,10 +380,10 @@ async function onload() {
   }, 1000);
 
   document.querySelectorAll("[data-palette-id]").forEach((element, index) => {
-      const { x, y } = getRandomPosition();
-      element.style.setProperty("left", `${x}px`);
-      element.style.setProperty("top", `${y}px`);
-    });
+    const { x, y } = getRandomPosition();
+    element.style.setProperty("left", `${x}px`);
+    element.style.setProperty("top", `${y}px`);
+  });
 
   setInterval(() => {
     document.querySelectorAll("[data-palette-id]").forEach((element, index) => {

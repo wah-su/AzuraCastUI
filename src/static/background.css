@@ -1,0 +1,13 @@
+.bg-dominant {
+    background-color: var(--bg-dominant-color, #111111);
+    transition: background-color 0.5s ease-in 0s;
+}
+
+.bg-palette {
+    background-color: var(--bg-palette-color, #111111);
+    transition: top 5s ease-in 0s, left 5s ease-in 0s, background-color 0.5s ease-in 0s;
+}
+
+.bg-palette:nth-child(even) {
+    background-color: var(--bg-palette-color, #ffffff);
+}
