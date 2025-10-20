@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script>
+      if (window.location.pathname.charAt(window.location.pathname.length - 1) !== '/') {
+        window.location.href = window.location.href + '/';
+      }
+    </script>
+
     <title>AzuraCast UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./js/tryCatch.ts" type="module"></script>
