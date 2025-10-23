@@ -321,15 +321,14 @@ export async function toggleRadio() {
   if (audioElement) {
     if (audioElement.paused) {
       audioElement.play();
-      togglePlayIcon("play");
     } else {
       audioElement.pause();
-      togglePlayIcon("pause");
     }
   } else {
     const el = document.createElement("audio");
     const sr = data.station.hls_url;
     el.addEventListener("play", () => {
+      el.currentTime = el.duration;
       togglePlayIcon("play");
     });
     el.addEventListener("pause", () => {
@@ -344,6 +343,7 @@ export async function toggleRadio() {
       hls.attachMedia(el);
       el.volume = getVolume() / 100;
       el.play();
+      togglePlayIcon("play");
     }
   }
 }
