@@ -75,11 +75,18 @@ export function setVolume(): void {
     return;
   }
 
-  if (audioElement) {
-    audioElement.volume = Number(volumeSlider.value) / 100;
+  let newVolume = Number(volumeSlider.value);
+  if (newVolume > 100) {
+    newVolume = 100;
+  } else {
+    newVolume = Math.max(newVolume, 0);
   }
 
-  changeVolumeIcon(Number(volumeSlider.value));
+  if (audioElement) {
+    audioElement.volume = newVolume / 100;
+  }
+
+  changeVolumeIcon(newVolume);
   localStorage.setItem("volume", String(volumeSlider.value));
 }
 

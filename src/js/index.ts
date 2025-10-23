@@ -21,6 +21,15 @@ function onload() {
     volumeSlider.value = String(getVolume());
     setVolume();
     volumeSlider.addEventListener("change", setVolume);
+    volumeSlider.addEventListener("wheel", (e) => {
+      if (e.deltaY < 0) {
+        volumeSlider.value = String(getVolume() + 10);
+        setVolume();
+      } else {
+        volumeSlider.value = String(getVolume() - 10);
+        setVolume();
+      }
+    });
   }
 
   getAndPopulateStations();
