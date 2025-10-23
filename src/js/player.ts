@@ -157,6 +157,8 @@ export async function fetchStationNowPlaying(id: number) {
 }
 
 function stopMedia() {
+  togglePlayIcon("pause");
+
   const audioElement = getElementByQuery<HTMLAudioElement>("audio");
   if (audioElement) {
     audioElement.pause();
@@ -265,10 +267,8 @@ export async function getAndPopulateStations() {
   });
 }
 
-function togglePlayIcon(
-  playButton: HTMLButtonElement,
-  state: "play" | "pause"
-) {
+function togglePlayIcon(state: "play" | "pause") {
+  const playButton = getElementById<HTMLButtonElement>("playButton");
   if (!playButton || !playButton.children[0] || !playButton.children[1]) {
     console.error("No play button found!");
     return;
@@ -316,16 +316,25 @@ export async function toggleRadio() {
     return false;
   }
 
-  if (playButton.dataset.active == "true") {
-    togglePlayIcon(playButton, "pause");
-    playButton.dataset.active = "false";
-    stopMedia();
-  } else {
-    togglePlayIcon(playButton, "play");
-    playButton.dataset.active = "true";
+  let audioElement = getElementByQuery<HTMLAudioElement>("audio");
 
+  if (audioElement) {
+    if (audioElement.paused) {
+      audioElement.play();
+      togglePlayIcon("play");
+    } else {
+      audioElement.pause();
+      togglePlayIcon("pause");
+    }
+  } else {
     const el = document.createElement("audio");
     const sr = data.station.hls_url;
+    el.addEventListener("play", () => {
+      togglePlayIcon("play");
+    });
+    el.addEventListener("pause", () => {
+      togglePlayIcon("pause");
+    });
 
     const bodyEl = getElementByQuery<HTMLBodyElement>("body");
     if (bodyEl) {
