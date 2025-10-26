@@ -89,7 +89,10 @@ export async function fetchStationNowPlaying(id: number) {
   extractCoverColorsAndSetBackgroundColors();
   if (playerTitle) playerTitle.textContent = data.now_playing.song.title;
   if (playerArtist) playerArtist.textContent = data.now_playing.song.artist;
-  updatePlayTimer(data.now_playing.played_at, data.now_playing.duration);
+
+  if (!data.is_online) {
+    updatePlayTimer(new Date().getTime() / 1000, data.now_playing.duration);
+  }
 
   const services = getAllElementByQuery<HTMLAnchorElement>(
     "[data-service-prefix]"
@@ -103,11 +106,17 @@ export async function fetchStationNowPlaying(id: number) {
   }
 
   // @ts-ignore
-  if (updatePlayTimerInterval) {
+  if (updatePlayTimerInterval || !data.is_online) {
     clearInterval(updatePlayTimerInterval);
   }
 
   updatePlayTimerInterval = setInterval(() => {
+    if (!data.is_online || data.now_playing.duration === 0) {
+      // @ts-ignore
+      clearInterval(this);
+      return;
+    }
+
     if (
       data.now_playing.duration -
         computeElapsedTime(data.now_playing.played_at) <=
@@ -118,7 +127,6 @@ export async function fetchStationNowPlaying(id: number) {
       fetchStationNowPlaying(id);
       return;
     }
-
     updatePlayTimer(data.now_playing.played_at, data.now_playing.duration);
   }, 1000);
 
@@ -130,12 +138,14 @@ export async function fetchStationNowPlaying(id: number) {
   const nextSongContainer = getElementById<HTMLDivElement>("nextSongContainer");
   if (nextSongContainer) {
     removeAllChildNodes(nextSongContainer);
-    const elem = createSongElement(
-      data.playing_next.played_at,
-      data.playing_next.song
-    );
-    if (elem) {
-      nextSongContainer.appendChild(elem);
+    if (data.is_online) {
+      const elem = createSongElement(
+        data.playing_next.played_at,
+        data.playing_next.song
+      );
+      if (elem) {
+        nextSongContainer.appendChild(elem);
+      }
     }
   }
 
@@ -144,13 +154,15 @@ export async function fetchStationNowPlaying(id: number) {
   );
   if (historySongContainer) {
     removeAllChildNodes(historySongContainer);
-    data.song_history.forEach((song: any, index: number) => {
-      if (index > 3) return;
-      const elem = createSongElement(song.played_at, song.song);
-      if (elem) {
-        historySongContainer.appendChild(elem);
-      }
-    });
+    if (data.is_online) {
+      data.song_history.forEach((song: any, index: number) => {
+        if (index > 3) return;
+        const elem = createSongElement(song.played_at, song.song);
+        if (elem) {
+          historySongContainer.appendChild(elem);
+        }
+      });
+    }
   }
 
   updateTimestamps();
@@ -328,7 +340,11 @@ export async function toggleRadio() {
     const el = document.createElement("audio");
     const sr = data.station.hls_url;
     el.addEventListener("play", () => {
-      el.currentTime = el.duration;
+      if (!isFinite(el.duration)) {
+        el.currentTime = 0;
+      } else {
+        el.currentTime = el.duration;
+      }
       togglePlayIcon("play");
     });
     el.addEventListener("pause", () => {

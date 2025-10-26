@@ -137,7 +137,6 @@ export function updateTimestamps(): void {
     "[data-played-timestamp]"
   );
   if (!timestamps) {
-    console.error("No timestamp elements found!");
     return;
   }
 
@@ -226,6 +225,18 @@ export function updateBackgroundColors(
   }
 }
 
+function extractAndUpdateBGColorsCallback() {
+  const CT = new ColorThief();
+  const playerCover = getElementById<HTMLImageElement>("playerCover");
+  if (!playerCover) {
+    console.error("No player cover found!");
+    return;
+  }
+  const dominant = CT.getColor(playerCover);
+  const palette = CT.getPalette(playerCover, 9);
+  updateBackgroundColors([...dominant], [...palette]);
+}
+
 export function extractCoverColorsAndSetBackgroundColors() {
   const playerCover = getElementById<HTMLImageElement>("playerCover");
   if (!playerCover) {
@@ -233,16 +244,9 @@ export function extractCoverColorsAndSetBackgroundColors() {
     return;
   }
 
-  const CT = new ColorThief();
   if (playerCover.complete) {
-    const dominant = CT.getColor(playerCover);
-    const palette = CT.getPalette(playerCover, 9);
-    updateBackgroundColors([...dominant], [...palette]);
+    extractAndUpdateBGColorsCallback();
   } else {
-    playerCover.addEventListener("load", function () {
-      const dominant = CT.getColor(playerCover);
-      const palette = CT.getPalette(playerCover, 9);
-      updateBackgroundColors([...dominant], [...palette]);
-    });
+    playerCover.addEventListener("load", extractAndUpdateBGColorsCallback);
   }
 }
